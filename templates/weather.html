@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+{% block page_content %}
+<div class="pricing-header p-3 pb-md-4 mx-auto text-center">
+  <h1 class="display-4 fw-normal">{{city[0]}}</h1>
+  <p class="fs-5 text-muted">Found at {{city[1]}}, {{city[2]}}</p>
+</div>
+<div class="row align-items-md-stretch">
+  <div class="col-4">
+    <form method="POST" action="{{url_for('weather_send')}}">
+      <div class="card">
+        <div class="card-header">
+          Selected chart options
+        </div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">
+            <select class="form-select" name="city" required>
+            <option value="">City</option>
+            <option value="berlin">Berlin</option>
+            <option value="paris">Paris</option>
+            <option value="london">London</option>
+          </select>
+          </li>
+          <li class="list-group-item">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="rain" value="yes"> Rain
+            </div>
+          </li>
+          <li class="list-group-item">
+            <input class="btn btn-primary" type="submit" value="Submit">
+          </li>
+        </ul>
+      </div>
+    </form>
+  </div>
+  <div class="col-4">
+    <canvas id="myChart" width="400" height="400"></canvas>
+  </div>
+   <div class="col-4">
+     {{data[1]}}
+     <br>
+     {{data[2]}}
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js" integrity="sha512-ElRFoEQdI5Ht6kZvyzXhYG9NqjtkmlkfYk0wr6wHxU9JEHakS7UJZNeml5ALk+8IKlU6jDgMabC3vkumRokgJA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+
+  var labels = "{{data[1]}}";
+  labels = labels.replaceAll("&#39;", "'");
+  console.log(labels);
+  labels = labels.split(",")
+  console.log(labels);
+
+  var values_temp = "{{data[2]}}";
+  console.log(values_temp);
+  values_temp= values_temp.split(",");
+  console.log(values_temp);
+
+  var values_rain = "{{ data[3] }}";
+  console.log(values_rain);
+  values_rain= values_rain.split(",");
+  console.log(values_rain);
+
+
+const ctx = document.getElementById('myChart').getContext('2d');
+const myChart = new Chart(ctx, {
+    data: {
+        labels: labels,
+        datasets: [{
+            type: 'line',
+            label: 'Temperature',
+            data: values_temp,
+            borderColor: 'rgb(75,192,192)',
+            tension: 0.1
+        }, {
+            type: 'bar',
+            label: 'Rain',
+            data: values_rain,
+            backgroundColor: 'rgb(202,127,231)',
+            borderColor: 'rgb(88,6,122)',
+        }]
+    }
+});
+</script>
+
+{% endblock %}
